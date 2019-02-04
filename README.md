@@ -1,1 +1,1 @@
-# CZ4034-Information-Retrieval-Assignment
+# CZ4034-Information Retrieval Assignment
