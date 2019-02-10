@@ -1,5 +1,15 @@
 # CZ4034-Information Retrieval Assignment
 
+### Environment Setup
+1. Create a virtual environment using `python3 -m virtualenv env`
+2. Activate the virtual environment using `env\scripts\activate` (Windows) or `source env/bin/activate` (Ubuntu)
+3. Install dependencies using `pip install -r requirements.txt`
+
+### Hosting Web Interface Locally
+1. Activate virtual environment
+2. Change directory into `web_interface`
+3. Start local host server (http://127.0.0.1:8000) using `python manage.py runserver`
+
 ### Questions Checklist
 | No. |                                                                                                  Questions                                                                                                 |   Status         |
 |-----|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|:----------------:|
