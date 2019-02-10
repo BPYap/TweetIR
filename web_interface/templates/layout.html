@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+    <header>
+        {% include "components/header.html" %}
+        <!--Navigation menu-->
+        <nav>
+            <div class="nav-wrapper" style="background-color:#3c938b">
+                <div class="container">
+                    <label class="brand-logo" style="font-size:1.5em">Group 1</label>
+                    <ul id="nav-mobile" class="right hide-on-med-and-down">
+                        <li id="Home"><a href="/">Home</a></li>
+                        <li id="Corpus"><a href="/corpus">Corpus</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <script>document.getElementById("{{ name }}").classList.add('active');</script>
+    </header>
+
+    <main>
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    {% include "components/footer.html" %}
+</html>

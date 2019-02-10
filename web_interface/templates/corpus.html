@@ -1,0 +1,194 @@
+{% extends "layout.html" %}
+
+{% block content %}
+    <div class="container">
+        <b><h4>Corpus Specification</h4></b>
+        <div class="divider"></div>
+
+        <div class="section">
+            <h5>Introduction</h5>
+            <p>The text corpus consists of around 30k tweets from all over the world that mentioned the name of the
+                current U.S. president, Donald J. Trump. Detailed information about the corpus is shown below:</p>
+            <table class="highlight">
+                <tbody>
+                    <tr>
+                        <td>Data Source</td>
+                        <td>Twitter</td>
+                    </tr>
+                    <tr>
+                        <td>API Used</td>
+                        <td><a href="https://github.com/taspinar/twitterscraper">twitterscrapper</a></td>
+                    </tr>
+                    <tr>
+                        <td>Language</td>
+                        <td>English</td>
+                    </tr>
+                    <tr>
+                        <td>Time Interval</td>
+                        <td>01-Mar-2006 until 04-Feb-2019</td>
+                    </tr>
+                    <tr>
+                        <td>Keywords</td>
+                        <td>"Donald Trump OR Donald J. Trump"</td>
+                    </tr>
+                    <tr>
+                        <td>Meta Information</td>
+                        <td>
+                            <ul>
+                                <li>&bull; Username</li>
+                                <li>&bull; Full name</li>
+                                <li>&bull; Tweet URL</li>
+                                <li>&bull; Timestamp</li>
+                                <li>&bull; Content</li>
+                                <li>&bull; Number of replies</li>
+                                <li>&bull; Number of retweets</li>
+                                <li>&bull; Number of likes</li>
+                            </ul>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="section">
+            <h5>Format</h5>
+            <p>The crawled corpus is stored as a Comma-separated values (CSV) file. The first line of the file contains
+                the titles for meta information. Each subsequent line contains attributes of a tweet record separated
+                by comma. Some example records is given below:</p>
+            <table class="highlight responsive-table">
+                <thead>
+                    <tr>
+                        <th>Username</th>
+                        <th>Full Name</th>
+                        <th>URL</th>
+                        <th>Timestamp</th>
+                        <th>Content</th>
+                        <th>No. replies</th>
+                        <th>No. retweets</th>
+                        <th>No. likes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>cmazurski</td>
+                        <td>Christopher Mazurski</td>
+                        <td><a href="https://twitter.com/cmazurski/status/1092094352371994627">/cmazurski/status/1092094352371994627</a></td>
+                        <td>2/3/2019 16:15:58</td>
+                        <td>How can YOU actually do what you are accusing HIM of doing and yet still be
+                            STUPID enough to think you could Do A better JOB of Lying than Donald J Trump?
+                            And I want to ADMIT that? In Public? Very Interesting..</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                    </tr>
+                    <tr>
+                        <td>VenturesAfrica</td>
+                        <td>Ventures Africa</td>
+                        <td><a href="https://twitter.com/VenturesAfrica/status/351829322253860865">/VenturesAfrica/status/351829322253860865</a></td>
+                        <td>01-07-2013  22:27:01</td>
+                        <td>Billionaire Ashish J. Thakkar Attacks Donald Trump Over Ignorant Statement http://bit.ly/19Qe9Hm  #Africa #Business</td>
+                        <td>1</td>
+                        <td>16</td>
+                        <td>3</td>
+                    </tr>
+                    <tr>
+                        <td>StewartHaasRcng</td>
+                        <td>Stewart-Haas Racing</td>
+                        <td><a href="https://twitter.com/StewartHaasRcng/status/66529706798886912">/StewartHaasRcng/status/66529706798886912</a></td>
+                        <td>06-05-2011  15:48:12</td>
+                        <td>Good call. @IndyCar reports legend A.J. Foyt will replace Donald Trump in the Indianapolis 500 pace car.</td>
+                        <td>0</td>
+                        <td>19</td>
+                        <td>3</td>
+                    </tr>
+                    <tr>
+                        <td>Georga2012</td>
+                        <td>Georga Grivois</td>
+                        <td><a href="https://twitter.com/Georga2012/status/570686962341978112">/Georga2012/status/570686962341978112</a></td>
+                        <td>2/25/2015 20:49:09</td>
+                        <td>PLEASE RUN Donald J. Trump!! http://fb.me/1x51Wy7Fq </td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                    </tr>
+                    <tr>
+                        <td>realDonaldTrump</td>
+                        <td>Donald J. Trump</td>
+                        <td><a href="https://twitter.com/realDonaldTrump/status/276437174847672320">/realDonaldTrump/status/276437174847672320</a></td>
+                        <td>05-12-2012  21:25:33</td>
+                        <td>“I don’t see the point of being politically correct if that means actually being incorrect.” – Donald J. Trump 'Midas Touch'</td>
+                        <td>197</td>
+                        <td>1592</td>
+                        <td>1663</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="section">
+            <h5>Corpus Analysis</h5>
+            <p>In-depth analysis for the contents of crawled tweets is shown below:</p>
+            <table class="highlight">
+                <thead>
+                    <tr>
+                        <th>Attribute</th>
+                        <th>Count</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Number of records</td>
+                        <td>29771</td>
+                    </tr>
+                    <tr>
+                        <td>Number of characters</td>
+                        <td>3786915</td>
+                    </tr>
+                    <tr>
+                        <td>Number of unique characters</td>
+                        <td>383</td>
+                    </tr>
+                    <tr>
+                        <td>Number of words</td>
+                        <td>683994</td>
+                    </tr>
+                    <tr>
+                        <td>Number of unique words</td>
+                        <td>53037</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="section">
+                <p>&nbsp;</p>
+                <h6><b>Verifying Heap's Law</b></h6>
+                <p>Heap's law is an empirical finding about relationship between vocabulary size and number of tokens.
+                    Given <b>M</b> = Size of vocabulary in a corpus and <b>T</b> = Number of tokens in the corpus, their
+                    relationship is formulated as: <b>M = kT<sup>b</sup></b>, where <b>k</b> typically lies within the
+                    interval [30, 100] and <b>b</b> ≈ 0.5. </p>
+                <p>Using the analysis result above (<b>M</b> = 53037, <b>T</b> = 683994), <b>k</b> is calculated as follow:</p>
+                <b>
+                    <p>k = M / T <sup>b</sup></p>
+                    <p>&nbsp;&nbsp; = 53037 / 683994 <sup>0.5</sup></p>
+                    <p>&nbsp;&nbsp; = 64.1287544</p>
+                </b>
+                <p>The computed <b>k</b> lies within the interval [30, 100], as predicted by Heap's law.</p>
+            </div>
+
+            <div class="section">
+                <h6><b>Illustration of Zipf's Law</b></h6>
+                <p>Zipf's law states that given a natural language corpus, the frequency of any word is inversely
+                    proportional to its rank in the frequency table. This relationship can also be seen in our
+                    crawled corpus, as illustrated below:</p>
+                {% load static %}
+                <img class="materialboxed" src="{% static "word_frequency.png" %}" alt="word-frequency plot" width=1000>
+            </div>
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    var elems = document.querySelectorAll('.materialboxed');
+                    var instances = M.Materialbox.init(elems, null);
+                });
+            </script>
+        </div>
+    </div>
+{% endblock %}

@@ -11,8 +11,8 @@ if __name__ == '__main__':
     
     with open("data/" + QUERY + ".csv", 'w', newline='', encoding='utf-8') as f:
         writer = csv.writer(f)
-        writer.writerow(["Username", "Full name", "URL", "Timestamp", "Content", 
-                "No. replies", "No. retweets", "No. likes"])
+        writer.writerow(["Username", "Full name", "URL", "Timestamp", "Content",
+                         "No. replies", "No. retweets", "No. likes"])
         seen_tweets = set()
         for tweet in tweets:
             if tweet.text not in seen_tweets:

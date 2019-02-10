@@ -1,1 +1,4 @@
 env/
+draft/
+.idea/
+*.pyc

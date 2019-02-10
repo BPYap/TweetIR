@@ -1,0 +1,133 @@
+<!--output widget with pagination control and download feature-->
+<!--Note: This widget assumes the output is a list of dictionary with exactly one entry, where the key
+<!--      of the entry is the original input and value of the entry is a list of outputs generated from that input.-->
+
+<!--pagination control for batch generation-->
+<script>
+    var current_active_page = 1;
+    function showPage(pageNum) {
+        document.getElementById("page-" + current_active_page).style.display = "none";
+        document.getElementById("page-" + pageNum).style.display = "block";
+        current_active_page = pageNum;
+    }
+</script>
+
+{% if outputs %}
+    <!--tool bar-->
+    <div id="tool-bar" class="row valign-wrapper container">
+        <!--pagination control-->
+        {% if outputs|length > 1 %}
+            <div id="pagination" class="col s8"></div>
+            <style>
+                .pagination li.active {
+                    background-color: #26a69a
+                }
+            </style>
+            <script>
+                $('#pagination').materializePagination({
+                    align: 'left',
+                    firstPage: 1,
+                    lastPage: {{ outputs|length }},
+                    useUrlParameter: false,
+                    onClickCallback: function(requestedPage){showPage(requestedPage);}
+                });
+            </script>
+        {% endif %}
+
+        <!--download control-->
+        <!-- Dropdown Trigger -->
+        <div class="col s4">
+            <div class="dropdown-trigger btn right" data-target="download_options">Download</div>
+        </div>
+        <!-- Dropdown Structure -->
+        <ul id="download_options" class="dropdown-content">
+            <a id="txt_download">
+                <li class="valign-wrapper"><div class="btn-flat" style="text-transform: lowercase;">.txt</div></li>
+            </a>
+
+            <li class="divider" tabindex="-1"></li>
+
+            <a id="json_download">
+                <li class="valign-wrapper"><div class="btn-flat" style="text-transform: lowercase;">.json</div></li>
+            </a>
+        </ul>
+        {{ outputs|json_script:"outputs_data" }}
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                var elems = document.querySelectorAll('.dropdown-trigger');
+                var instances = M.Dropdown.init(elems, {});
+
+                var content = JSON.parse(document.getElementById("outputs_data").textContent);
+
+                var formatted_content = "";
+
+                // detect system platform to determine end of line characters
+                var newline = "\n";
+                var platform = navigator.platform.toLowerCase();
+                if(platform.indexOf('win') != -1) newline = "\r\n"; // win
+                else if(platform.indexOf('mac') != -1) newline = "\r"; // mac
+
+                for (var i = 0; i < content.length; i++) {
+                    for (const [key, values] of Object.entries(content[i])) {
+                        formatted_content += key.trimRight(newline) + newline + newline;
+                        formatted_content += values.join(newline);
+                        formatted_content += newline + "=".repeat(60) + newline;
+                    }
+                }
+                var txt_blob = new Blob([formatted_content], {type : "text/plain;charset=utf-8;"});
+                txt_download = document.getElementById("txt_download");
+                txt_download.setAttribute("href", URL.createObjectURL(txt_blob));
+                txt_download.setAttribute("download", "{{ output_filename }}.txt");
+
+                var json_blob = new Blob([JSON.stringify(content)], {type : "application/json;charset=utf-8;"});
+                json_download = document.getElementById("json_download");
+                json_download.setAttribute("href", URL.createObjectURL(json_blob));
+                json_download.setAttribute("download", "{{ output_filename }}.json");
+            });
+        </script>
+    </div>
+
+    {% for result in outputs %}
+        {% for input, values in result.items %}
+            {% if values %}
+                {% if forloop.parentloop.counter == 1 %}
+                    <ul id="page-1" class="collection with-header container">
+                {% else %}
+                    <ul id="page-{{ forloop.parentloop.counter }}" class="collection with-header container" style="display: none">
+                {% endif %}
+
+                    {% block output_extension %}
+                    <!--extends this template (not include) to add additional output (e.g. graphs) -->
+                    {% endblock %}
+
+                    <li id="page-header-{{ forloop.parentloop.counter }}" class="collection-header"><h6>{{ success_msg }} '<b>{{ input }}</b>':</h6></li>
+                    <div id="page-content-{{ forloop.parentloop.counter }}">
+                        {% for value in values %}
+                            <li class="collection-item"><div>{{ forloop.counter }}. {{ value|safe }}</div></li>
+                        {% endfor %}
+                    </div>
+                </ul>
+            {% else %}
+                {% if forloop.parentloop.counter == 1 %}
+                    <ul id="page-1" class="collection with-header container">
+                {% else %}
+                    <ul id="page-{{ forloop.parentloop.counter }}" class="collection with-header container" style="display: none">
+                {% endif %}
+                    <li id="page-header-{{ forloop.parentloop.counter }}" class="collection-header"><h6>{{ failure_msg }} (input: '<b>{{ input }}</b>')</h6></li>
+                    <div id="page-content-{{ forloop.parentloop.counter }}"></div>
+                </ul>
+            {% endif %}
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    if (content_height == null) {
+                        bottom = document.getElementById("page-header-1").getBoundingClientRect().bottom;
+                        var content_height = (window.innerHeight - bottom  - 30) + "px";
+                    }
+                    var page_content = document.getElementById("page-content-{{ forloop.parentloop.counter }}");
+                    page_content.style.height = content_height;
+                    page_content.style.overflowY = "scroll";
+                });
+            </script>
+        {% endfor %}
+    {% endfor %}
+{% endif %}
