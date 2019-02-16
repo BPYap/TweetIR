@@ -1,0 +1,87 @@
+{% extends "layout.html" %}
+
+{% block content %}
+    <div class="container">
+        <b><h4>Sentiment Analysis</h4></b>
+        <div class="divider"></div>
+
+        <div class="section">
+            <h5>Introduction</h5>
+            <p>To be added</p>
+        </div>
+
+        <div class="section">
+            <h5>Text Cleaning</h5>
+            <p>The crawled corpus is cleaned with a third party text processing tool targeted at Twitter's tweets,
+                <a href="https://github.com/cbaziotis/ekphrasis">Ekphrasis</a>. Using this tool, total number of unique
+                tokens is reduced from 53037 to 30524 tokens (about 42% decreases). List of special terms that are
+                normalized and their examples is given below:</p>
+            <table class="highlight responsive-table">
+                <thead>
+                    <tr>
+                        <th>Type</th>
+                        <th>Original Text</th>
+                        <th>Normalized</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>url</td>
+                        <td>Just as you don't want to give up on yourself, you can't always just give up on
+                            other people either -Donald J. Trump <strong>http://is.gd/RPdu</strong></td>
+                        <td>Just as you don't want to give up on yourself, you can't always just give up on
+                            other people either - Donald J . Trump <strong>&lt;url&gt;</strong></td>
+                    </tr>
+                    <tr>
+                        <td>email</td>
+                        <td>Tonight Mar 13 at 9:30 pm EST, Donald J. Trump will show you how to opt out of
+                            the recession. <strong>lil@todayisyourtime.com</strong> BY INVITATION ONLY</td>
+                        <td>Tonight Mar 13 at 9:30 pm EST, Donald J. Trump will show you how to opt out of
+                            the recession. <strong>&lt;email&gt;</strong> BY INVITATION ONLY</td>
+                    </tr>
+                    <tr>
+                        <td>percent</td>
+                        <td>But j.hud does sing better. <strong>100000000000%</strong> better lmao RT @necolebitchie Rihanna’s
+                            Camp Responds to Donald Trump</td>
+                        <td>/But j.hud does sing better. <strong>&lt;percent&gt;</strong> better lmao RT @necolebitchie Rihanna’s
+                            Camp Responds to Donald Trump</td>
+                    </tr>
+                    <tr>
+                        <td>money</td>
+                        <td>Trump the Game Donald J. Trump Original 1989 Milton Bradley Board Game NR
+                            NEW <strong>$22.99</strong></td>
+                        <td>Trump the Game Donald J. Trump Original 1989 Milton Bradley Board Game NR
+                            NEW <strong>&lt;money&gt;</strong></td>
+                    </tr>
+                    <tr>
+                        <td>phone</td>
+                        <td>Trump How to Get Rich by Meredith McIver and Donald J Trump 2004 Hardcover <strong>1400063272</strong></td>
+                        <td>Trump How to Get Rich by Meredith McIver and Donald J Trump 2004 Hardcover <strong>&lt;phone&gt;</strong></td>
+                    </tr>
+                    <tr>
+                        <td>user</td>
+                        <td>I'm reading 'Think Like a Billionaire' by Donald J Trump. <strong>@ReadaBookSA</strong></td>
+                        <td>I'm reading 'Think Like a Billionaire' by Donald J Trump. <strong>&lt;user&gt;</strong></td>
+                    </tr>
+                    <tr>
+                        <td>time</td>
+                        <td>J. Sweeney -  The Donald and I do battle. Who fires who?The Trouble With Trump -
+                            Panorama, BBC1, <strong>8.30pm</strong>, Monday, 8th July</td>
+                        <td>J. Sweeney -  The Donald and I do battle. Who fires who?The Trouble With Trump -
+                            Panorama, BBC1, <strong>&lt;time&gt;</strong>, Monday, 8th July</td>
+                    </tr>
+                    <tr>
+                        <td>date</td>
+                        <td>Judges for Miss USA 2013 Announced!: New York, NY – <strong>June 10, 2013</strong> – NBC, Donald J. Trump</td>
+                        <td>Judges for Miss USA 2013 Announced!: New York, NY – <strong>&lt;date&gt;</strong> – NBC, Donald J. Trump</td>
+                    </tr>
+                    <tr>
+                        <td>number</td>
+                        <td>Talking <strong>12</strong> donald j. trump the apprentice collectible</td>
+                        <td>Talking <strong>&lt;number&gt;</strong> donald j. trump the apprentice collectible</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}

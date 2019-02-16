@@ -11,7 +11,7 @@ if __name__ == '__main__':
     text_processor = TextPreProcessor(
         # terms that will be ignored
         # possible values: ['email', 'percent', 'money', 'phone', 'user', 'time', 'url', 'date', 'hashtag']
-        omit = [],
+        omit=[],
 
         # terms that will be normalized
         # possible values: ['email', 'percent', 'money', 'phone', 'user', 'time', 'url', 'date', 'hashtag']
