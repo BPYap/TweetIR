@@ -8,6 +8,7 @@ import spacy
 nlp = spacy.load('en_core_web_sm')
 
 FILE_NAME = "04-Feb-2019.csv"
+CONTENT_COLUMN = 4
 
 if __name__ == '__main__':
     total_records = 0
@@ -18,7 +19,7 @@ if __name__ == '__main__':
         reader = csv.reader(f)
         next(reader)
         for row in reader:
-            content = row[4]
+            content = row[CONTENT_COLUMN]
             total_records += 1
             char_count.update(content)
             doc = nlp(content)
@@ -32,17 +33,17 @@ if __name__ == '__main__':
     print("Number of unique words:", len(word_count))
 
     print("\nTop-30 most common words:")
-    count = 0
+    curr_count = 0
     freqs = []
     words = []
     for word, count in word_count.most_common(100):
         if len(word) == 1 and word in string.punctuation:
             continue
-        elif count == 30:
+        elif curr_count == 30:
             break
         else:
             print("{:<10} count: {}".format(word, count))
-            count += 1
+            curr_count += 1
             freqs.append(count)
             words.append(word)
 
