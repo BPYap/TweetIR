@@ -8,11 +8,11 @@ mapping='''{
         "Username":    { "type": "text"  }, 
         "Full name":     { "type": "text"  }, 
         "URL":      { "type": "text" },
-        "Timetamp": {"type":"date","fielddata": true}
+        "Timestamp": {"type":"date","fielddata": true}
         "Content":  {"type":"text"}
-        "No.replies":{"type":"integer"}
-        "No.retweets":{"type":"integer"} 
-        "No.likes":   {"type":"integer"} 
+        "No. replies":{"type":"integer"}
+        "No. retweets":{"type":"integer"} 
+        "No. likes":   {"type":"integer"} 
       }
     }
   }
@@ -28,10 +28,54 @@ def create_index(name="tweet_index",filepath="data/data.json"):
         es.index(index=name, doc_type='tweet', id=i, body=record)
 
 
-def query(name="tweet_index",match_word="MAGA"):
+def query(name="tweet_index",match_word="MAGA",sort_by="recent"):
     '''
     name: name of the index
     match_word: keyword to be matched
     sort_by:recent/relevant
     '''
-    print(es.search(index=name, body={"query": {"match": {'Content':match_word}}}))
+    # print(es.search(index=name, body={"query": {"match": {'Content':match_word}}}))
+	
+	if sort_by == "recent":
+		print(es.search(
+					index=name, 
+					body= {
+						"query": {
+							"match": {
+								"Content":match_word
+							}
+						},
+						"sort": [
+							{"Timestamp": {"order": "desc"}}
+						]
+					}
+		))
+	else if sort_by == "relevant":
+		print(es.search(
+					index=name, 
+					body= {
+						"query": {
+							"match": {
+								"Content":match_word
+							}
+						},
+						"sort": [
+							{	
+								"No. likes": {"order": "desc"},
+								"No. retweets": {"order": "desc"},
+							}
+						]
+		))
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
