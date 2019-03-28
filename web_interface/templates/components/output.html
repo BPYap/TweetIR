@@ -1,8 +1,8 @@
-<!--output widget with pagination control and download feature-->
+<!--output widget with pagination control-->
 <!--Note: This widget assumes the output is a list of dictionary with exactly one entry, where the key
 <!--      of the entry is the original input and value of the entry is a list of outputs generated from that input.-->
 
-<!--pagination control for batch generation-->
+<!--pagination control-->
 <script>
     var current_active_page = 1;
     function showPage(pageNum) {
@@ -33,58 +33,6 @@
                 });
             </script>
         {% endif %}
-
-        <!--download control-->
-        <!-- Dropdown Trigger -->
-        <div class="col s4">
-            <div class="dropdown-trigger btn right" data-target="download_options">Download</div>
-        </div>
-        <!-- Dropdown Structure -->
-        <ul id="download_options" class="dropdown-content">
-            <a id="txt_download">
-                <li class="valign-wrapper"><div class="btn-flat" style="text-transform: lowercase;">.txt</div></li>
-            </a>
-
-            <li class="divider" tabindex="-1"></li>
-
-            <a id="json_download">
-                <li class="valign-wrapper"><div class="btn-flat" style="text-transform: lowercase;">.json</div></li>
-            </a>
-        </ul>
-        {{ outputs|json_script:"outputs_data" }}
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                var elems = document.querySelectorAll('.dropdown-trigger');
-                var instances = M.Dropdown.init(elems, {});
-
-                var content = JSON.parse(document.getElementById("outputs_data").textContent);
-
-                var formatted_content = "";
-
-                // detect system platform to determine end of line characters
-                var newline = "\n";
-                var platform = navigator.platform.toLowerCase();
-                if(platform.indexOf('win') != -1) newline = "\r\n"; // win
-                else if(platform.indexOf('mac') != -1) newline = "\r"; // mac
-
-                for (var i = 0; i < content.length; i++) {
-                    for (const [key, values] of Object.entries(content[i])) {
-                        formatted_content += key.trimRight(newline) + newline + newline;
-                        formatted_content += values.join(newline);
-                        formatted_content += newline + "=".repeat(60) + newline;
-                    }
-                }
-                var txt_blob = new Blob([formatted_content], {type : "text/plain;charset=utf-8;"});
-                txt_download = document.getElementById("txt_download");
-                txt_download.setAttribute("href", URL.createObjectURL(txt_blob));
-                txt_download.setAttribute("download", "{{ output_filename }}.txt");
-
-                var json_blob = new Blob([JSON.stringify(content)], {type : "application/json;charset=utf-8;"});
-                json_download = document.getElementById("json_download");
-                json_download.setAttribute("href", URL.createObjectURL(json_blob));
-                json_download.setAttribute("download", "{{ output_filename }}.json");
-            });
-        </script>
     </div>
 
     {% for result in outputs %}
@@ -95,10 +43,6 @@
                 {% else %}
                     <ul id="page-{{ forloop.parentloop.counter }}" class="collection with-header container" style="display: none">
                 {% endif %}
-
-                    {% block output_extension %}
-                    <!--extends this template (not include) to add additional output (e.g. graphs) -->
-                    {% endblock %}
 
                     <li id="page-header-{{ forloop.parentloop.counter }}" class="collection-header"><h6>{{ success_msg }} '<b>{{ input }}</b>':</h6></li>
                     <div id="page-content-{{ forloop.parentloop.counter }}">
@@ -121,7 +65,7 @@
                 document.addEventListener('DOMContentLoaded', function() {
                     if (content_height == null) {
                         bottom = document.getElementById("page-header-1").getBoundingClientRect().bottom;
-                        var content_height = (window.innerHeight - bottom  - 30) + "px";
+                        var content_height = (window.innerHeight - bottom  - 60) + "px";
                     }
                     var page_content = document.getElementById("page-content-{{ forloop.parentloop.counter }}");
                     page_content.style.height = content_height;

@@ -1,61 +1,11 @@
-<!--Input widget with text box and file upload feature-->
-
-<!--chips control for file upload-->
-<script>
-    file_chips = null;
-    is_replace = false;
-
-    function addFile(chips, file_path) {
-        var startIndex = (file_path.indexOf('\\') >= 0 ? file_path.lastIndexOf('\\') : file_path.lastIndexOf('/'));
-        var file_name = file_path.substring(startIndex);
-        if (file_name.indexOf('\\') === 0 || file_name.indexOf('/') === 0) {
-            file_name = file_name.substring(1);
-        }
-
-        if (chips.chipsData.length == 1) {
-            if (file_name != "") {
-                is_replace = true;
-                chips.deleteChip(0);
-                chips.addChip({tag: file_name});
-            } else {
-                chips.deleteChip(0);
-            }
-        } else {
-            chips.addChip({tag: file_name});
-            clearValue('input_text');
-            displayElem('input_text', false);
-            displayElem('file_upload', true);
-        }
-    }
-
-    document.addEventListener('DOMContentLoaded', function() {
-        var elems = document.querySelectorAll('.chips');
-        options = {
-            "limit": 1,
-            "onChipDelete": function(e, chip) {
-                                if (!is_replace) {
-                                    clearValue('txt_file');
-                                    displayElem('file_upload', false);
-                                    displayElem('input_text', true);
-                                }
-                                is_replace = false;
-                            }
-        }
-        var instances = M.Chips.init(elems, options);
-        file_chips = instances[0];
-    });
-</script>
-
-<div class="row container">
+<!--Input widget with search box -->
+<div class="row container" style="margin-bottom:10px">
     <form enctype="multipart/form-data" action="" method="post" class="col s12">
     {% csrf_token %}
         <div class="row">
             <div class="input-field col s12">
-
-                <div id="file_upload" style="display: none; margin-top:0; margin-bottom:0" class="chips"></div>
-
                 <input id="input_text" style="margin-bottom:0" type="text"
-                       placeholder="{{ input_instruction }}"
+                       placeholder="Type a keyword..."
                        name="text_input">
 
                 <button type="submit" style="position:absolute; top:.5rem; right:1.25rem" class="btn-flat" onclick="displayElem('loading', true)">
@@ -65,17 +15,8 @@
                 <div id="loading" class="progress" style="margin:0; display:none"><div class="indeterminate"></div></div>
             </div>
 
-            <div id="input_toolbar" class="switch col s12 valign-wrapper">
-                <div class="btn file-field">
-                    <span>Upload</span>
-                    <input id="txt_file" type="file" accept=".txt" name="file_input"
-                           oninput="addFile(file_chips, this.value)">
-                </div>
-
-                {% block parameter_extension %}
-                <!--extends this template (not include) to add parameters controls-->
-                {% endblock %}
-            </div>
+            <!--<div id="input_toolbar" class="switch col s12 valign-wrapper">-->
+            <!--</div>-->
         </div>
     </form>
 </div>
