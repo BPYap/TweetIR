@@ -1,0 +1,14 @@
+README.md
+setup.py
+crawler/__init__.py
+crawler/tweets_analyzer.py
+crawler/tweets_cleaner.py
+crawler/tweets_crawler.py
+custom_package.egg-info/PKG-INFO
+custom_package.egg-info/SOURCES.txt
+custom_package.egg-info/dependency_links.txt
+custom_package.egg-info/top_level.txt
+indexer/__init__.py
+indexer/convert_csv_to_json.py
+indexer/indexing.py
+indexer/main.py
