@@ -6,8 +6,8 @@ def home(request):
 
 
 def corpus(request):
-    return render(request, "corpus.html", {'name': "Corpus"})
+    return render(request, "corpus.html", {'name': "Documentation"})
 
 
 def sentiment(request):
-    return render(request, "sentiment.html", {'name': "Sentiment"})
+    return render(request, "sentiment.html", {'name': "Documentation"})

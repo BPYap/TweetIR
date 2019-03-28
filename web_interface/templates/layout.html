@@ -2,21 +2,37 @@
 <html lang="en">
     <header>
         {% include "components/header.html" %}
+        <!-- Dropdown Structure -->
+        <ul id="documentation_dropdown" class="dropdown-content">
+            <li id="Corpus"><a href="/corpus">Corpus</a></li>
+            <li id="Sentiment"><a href="/sentiment">Sentiment Analysis</a></li>
+        </ul>
         <!--Navigation menu-->
         <nav>
             <div class="nav-wrapper" style="background-color:#3c938b">
                 <div class="container">
                     <label class="brand-logo" style="font-size:1.5em">Group 1</label>
                     <ul id="nav-mobile" class="right hide-on-med-and-down">
-                        <li id="Home"><a href="/">Home</a></li>
-                        <li id="Corpus"><a href="/corpus">Corpus</a></li>
-                        <li id="Sentiment"><a href="/sentiment">Sentiment Analysis</a></li>
+                        <li id="Home"><a href="/">Search</a></li>
+                        <li id="Build"><a href="/">Build</a></li>
+                        <!-- Dropdown Trigger -->
+                        <li id="Documentation">
+                            <a class="dropdown-trigger" href="#!" data-target="documentation_dropdown">
+                                Technical Details
+                            </a>
+                        </li>
                     </ul>
                 </div>
             </div>
         </nav>
 
-        <script>document.getElementById("{{ name }}").classList.add('active');</script>
+        <script>
+            document.getElementById("{{ name }}").classList.add('active');
+            document.addEventListener('DOMContentLoaded', function() {
+                var elems = document.querySelectorAll('.dropdown-trigger');
+                var instances = M.Dropdown.init(elems, {"hover": true, "coverTrigger": false});
+            });
+        </script>
     </header>
 
     <main>
