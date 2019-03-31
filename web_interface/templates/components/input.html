@@ -3,10 +3,16 @@
     <form enctype="multipart/form-data" action="" method="post" class="col s12">
     {% csrf_token %}
         <div class="row">
-            <div class="input-field col s12">
-                <input id="input_text" style="margin-bottom:0" type="text"
-                       placeholder="Type a keyword..."
-                       name="text_input">
+            <div class="input-field col s12" style="padding: 0">
+                {% if query %}
+                    <input id="input_text" style="margin-bottom:0" type="text"
+                           value={{ query }}
+                           name="text_input">
+                {% else %}
+                    <input id="input_text" style="margin-bottom:0" type="text"
+                           placeholder="Type a keyword..."
+                           name="text_input">
+                {% endif %}
 
                 <button type="submit" style="position:absolute; top:.5rem; right:1.25rem" class="btn-flat" onclick="displayElem('loading', true)">
                     <i class="material-icons">subdirectory_arrow_left</i>
