@@ -3,7 +3,9 @@
 ### Environment Setup
 1. Create a virtual environment using `python3 -m virtualenv env`
 2. Activate the virtual environment using `env\scripts\activate` (Windows) or `source env/bin/activate` (Ubuntu)
-3. Install dependencies using `pip install -r requirements.txt`
+3. Install local dependencies using `python setup.py install`
+4. Install external dependencies using `pip install -r requirements.txt`
+5. Copy `config.json` (distributed by author) into root directory
 
 ### Hosting Web Interface Locally
 1. Activate virtual environment
@@ -16,9 +18,9 @@
 | 1.1 | How you crawled the corpus (e.g., source, keywords, API, library) and stored them (e.g., whether a record corresponds to a file or a line, meta information like publication date, author name, record ID) |:heavy_check_mark:|
 | 1.2 | What kind of information users might like to retrieve from your crawled corpus (i.e., applications), with example queries                                                                                  |:heavy_check_mark:|
 | 1.3 | The numbers of records, words, and types (i.e., unique words) in the corpus                                                                                                                                |:heavy_check_mark:|
-| 2.1 | Build a simple Web interface for the search engine (e.g., Google)                                                                                                                                          ||
+| 2.1 | Build a simple Web interface for the search engine (e.g., Google)                                                                                                                                          |:heavy_check_mark:|
 | 2.2 | A simple UI for crawling and incremental indexing of new data would be a bonus (but not compulsory)                                                                                                        ||
-| 2.3 | Write five queries, get their results, and measure the speed of the querying                                                                                                                               ||
+| 2.3 | Write five queries, get their results, and measure the speed of the querying                                                                                                                               |:heavy_check_mark:|
 | 3.1 | Interactive search (e.g., refine search results based on users’ relevance feedback)                                                                                                                        ||
 | 3.2 | Improve search results by integrating machine learning or data mining techniques (e.g., classification or cluster techniques)                                                                              ||
 | 3.3 | Go beyond text-based search (e.g., implement image retrieval or multimedia retrieval)                                                                                                                      ||
