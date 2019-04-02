@@ -1,6 +1,7 @@
 <meta charset="UTF-8">
 
 <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
@@ -34,6 +35,85 @@
 
     main {
         flex: 1 0 auto;
+    }
+
+    .btn-small, .btn-small:hover {
+        background-color: #0084b4;
+    }
+
+    #container {
+        width: 200px;
+        height: 36px;
+        margin: auto;
+        position: relative;
+        border-radius: 3px;
+        overflow: hidden;
+        user-select: none;
+        cursor: pointer;
+        float: right;
+    }
+
+    .inner-container {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: inherit;
+        height: inherit;
+        text-transform: uppercase;
+        font-size: .6em;
+        letter-spacing: .2em;
+    }
+
+    .inner-container:first-child {
+        background: #e9e9e9;
+        color: #a9a9a9;
+    }
+
+    .inner-container:nth-child(2) {
+        background: #0084b4;
+        color: white;
+        clip-path: inset(0 50% 0 0);
+        transition: .3s cubic-bezier(0,0,0,1);
+    }
+
+    .toggle {
+        width: 50%;
+        position: absolute;
+        height: inherit;
+        display: flex;
+        box-sizing: border-box;
+    }
+
+    .toggle p {
+        margin: auto;
+    }
+
+    .toggle:nth-child(1) {
+        right: 0;
+    }
+
+    .tweet_meta {
+        margin-top: 10px;
+        position: relative;
+        top: 5px;
+    }
+
+    .far, .fas {
+        margin: 0 5px 0 8px;
+    }
+
+    .sticky_header {
+        position: sticky;
+        top: 0px;
+        z-index: 9999;
+    }
+
+    .sticky_search {
+        margin-bottom: 5px !important;
+        position: sticky;
+        top: 64px;
+        z-index: 999;
+        background: white;
     }
 </style>
 

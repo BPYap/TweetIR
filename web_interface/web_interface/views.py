@@ -29,15 +29,17 @@ def home(request):
         "search_after": search_after
     }
 
-    return render(request, "index.html", arguments)
+    return render(request, "home.html", arguments)
 
 
 def get_page(request):
     query = request.POST["query"]
-    search_after = None if "search_after[]" not in request.POST else request.POST["search_after[]"]
+    search_after = None if "search_after[]" not in request.POST else request.POST.getlist("search_after[]")
+
     if search_after is not None and type(search_after) != list:
         search_after = [search_after]
-    response = elastic_query(match_word=query, search_after=search_after)
+    sort_by = "recent" if "relevant" not in request.POST else 'relevant'
+    response = elastic_query(match_word=query, sort_by=sort_by, search_after=search_after)
 
     serialized = []
     for tweet in response["results"]:
@@ -52,6 +54,11 @@ def get_page(request):
         serialized.append(temp)
 
     return JsonResponse({"tweets": serialized, "search_after": response["search_after"]})
+
+
+def index(request):
+    arguments = None
+    return render(request, "index.html", arguments)
 
 
 def corpus(request):

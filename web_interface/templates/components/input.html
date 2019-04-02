@@ -1,12 +1,12 @@
 <!--Input widget with search box -->
-<div class="row container" style="margin-bottom:10px">
+<div class="row container sticky_search">
     <form enctype="multipart/form-data" action="" method="post" class="col s12">
     {% csrf_token %}
         <div class="row">
             <div class="input-field col s12" style="padding: 0">
                 {% if query %}
                     <input id="input_text" style="margin-bottom:0" type="text"
-                           value={{ query }}
+                           value="{{ query }}"
                            name="text_input">
                 {% else %}
                     <input id="input_text" style="margin-bottom:0" type="text"
@@ -18,11 +18,16 @@
                     <i class="material-icons">subdirectory_arrow_left</i>
                 </button>
 
-                <div id="loading" class="progress" style="margin:0; display:none"><div class="indeterminate"></div></div>
+                <div id="loading" class="progress" style="margin:0; display:none; color:#0084b4"><div class="indeterminate"></div></div>
             </div>
-
-            <!--<div id="input_toolbar" class="switch col s12 valign-wrapper">-->
-            <!--</div>-->
         </div>
     </form>
+
+    {% if tweets %}
+        <div style="display:inline-block">
+            <div style="position: relative; bottom: 28px; color: #777;">
+                <i>{{ total_results }} results in {{ time_taken }} seconds</i>
+            </div>
+        </div>
+    {% endif %}
 </div>

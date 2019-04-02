@@ -91,14 +91,15 @@ def query(name="tweet_index", match_word="MAGA", sort_by="recent", es_host="sear
         body["search_after"] = search_after
 
     if sort_by == "recent":
-        body["sort"] = {"Timestamp": {"order": "desc"}}
+        body["sort"] = [{"Timestamp": {"order": "desc"}}, {"_id": "asc"}]
     else:
-        body['sort'] = [{"No. likes": {"order": "desc"}, "No. retweets": {"order": "desc"}}]
+        body['sort'] = [{"No. likes": {"order": "desc"}, "No. retweets": {"order": "desc"}}, {"_id": "asc"}]
 
     json_result = es.search(index=name, body=body, size=50)
 
     results = []
     search_after = None
+
     for tweet in json_result['hits']['hits']:
         results.append(Tweet(tweet['_source']))
         search_after = tweet['sort']

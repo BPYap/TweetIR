@@ -4,10 +4,40 @@
     var search_ids = new Array(total_pages);
 
     var curr_page = 0;
+    var sort_by_relevant = false;
     search_ids[0] = null;
-    search_ids[1] = {{ search_after }};
+    search_ids[1] = {{ search_after|safe }};
 
-    function update_table(is_forward) {
+    function update_table(data) {
+        search_ids[curr_page + 1] = data["search_after"];
+
+        $("tbody").empty();
+        $.each(data["tweets"], function (index, value) {
+            var username = value.username;
+            var timestamp = value.timestamp;
+            var url = value.url;
+            var content = value.content;
+            var num_reply = value.num_reply;
+            var num_retweet = value.num_retweet
+            var num_like = value.num_like
+            $("tbody").append(
+               "<tr>" +
+               "<td>" + username + "</td>" +
+
+               "<td><p style=\"word-wrap:break-word;margin:0;\">" + content + "</p>" +
+               "<div class=\"tweet_meta\">" +
+               "<a href=\"https://twitter.com/" + url + "\">" + timestamp + "</a>" +
+               "<div style=\"float:right; color:#657786; margin-right:5px\">" +
+               "<i class=\"far fa-comment\"></i>" + num_reply +
+               "<i class=\"fas fa-retweet\"></i>" + num_retweet +
+               "<i class=\"far fa-heart\"></i>" + num_like + "</div></div></td>" +
+
+               "</tr>"
+            )
+        })
+    }
+
+    function change_page(is_forward) {
         if (is_forward == true) {
             curr_page += 1;
         } else {
@@ -30,79 +60,125 @@
             headers: { "X-CSRFToken": Cookies.get("csrftoken") }
         });
 
+        payload = {"query": query, "search_after": search_ids[curr_page]};
+        if (sort_by_relevant == true) {
+            payload["relevant"] = true;
+        }
+
         $.ajax({
             method: "POST",
             url: "/get_page/",
-            data: {"query": query, "search_after": search_ids[curr_page]},
-            success: function(data) {
-                search_ids[curr_page + 1] = data["search_after"];
+            data: payload,
+            success: update_table
+        })
+    };
 
-                $("tbody").empty();
-                $.each(data["tweets"], function (index, value) {
-                    var username = value.username;
-                    var timestamp = value.timestamp;
-                    var url = value.url;
-                    var content = value.content;
-                    var num_reply = value.num_reply;
-                    var num_retweet = value.num_retweet
-                    var num_like = value.num_like
-                    $("tbody").append(
-                       "<tr>" +
-                       "<td>" + username + "</td>" +
-                       "<td><a href=\"https://twitter.com/" + url + "\">" + timestamp + "</a></td>" +
-                       "<td>" + content + "</td>" +
-                       "<td>" + num_reply + "</td>" +
-                       "<td>" + num_retweet + "</td>" +
-                       "<td>" + num_like + "</td>" +
-                       "</tr>"
-                    )
-                })
-            }
+    function change_sort(is_relevant) {
+        curr_page = 0;
+        sort_by_relevant = is_relevant;
+        $(".prev").addClass("disabled");
+        if (total_pages > 1) {
+            $(".next").removeClass("disabled");
+        }
+
+        $.ajaxSetup({
+            headers: { "X-CSRFToken": Cookies.get("csrftoken") }
+        });
+
+        payload = {"query": query};
+        if (is_relevant == true) {
+            payload["relevant"] = true;
+        }
+
+        $.ajax({
+            method: "POST",
+            url: "/get_page/",
+            data: payload,
+            success: update_table
         })
     };
 </script>
 
 {% if tweets %}
-    <!--tool bar-->
     <div class="container">
-        <div style="position: relative; bottom: 35px; color: #777">
-            <i>{{ total_results }} results in {{ time_taken }} seconds</i>
+        <!--toggle switch-->
+        <div id="container">
+            <div class="inner-container">
+                <div class="toggle">
+                    <p>Most Relevant</p>
+                </div>
+                <div class="toggle">
+                    <p>Most Recent</p>
+                </div>
+            </div>
+            <div class="inner-container" id='toggle-container'>
+                <div class="toggle">
+                    <p>Most Relevant</p>
+                </div>
+                <div class="toggle">
+                    <p>Most Recent</p>
+                </div>
+            </div>
         </div>
-        <div>
-            <a class="waves-effect waves-light btn-small prev disabled" onclick="update_table(false)">Prev</a>
-            <a class="waves-effect waves-light btn-small next" style="float: right" onclick="update_table(true)">Next</a>
-        </div>
+        <script>
+            var toggle = document.getElementById('container');
+            var toggleContainer = document.getElementById('toggle-container');
+            var toggleNumber;
+
+            toggle.addEventListener('click', function() {
+                toggleNumber = !toggleNumber;
+                if (toggleNumber) {
+                    toggleContainer.style.clipPath = 'inset(0 0 0 50%)';
+                    change_sort(true);
+                } else {
+                    toggleContainer.style.clipPath = 'inset(0 50% 0 0)';
+                    change_sort(false);
+                }
+                toggleContainer.style.backgroundColor = '#0084b4';
+            });
+        </script>
+
     </div>
 
     <div class="container">
-        <table class="highlight responsive-table">
+        <table class="striped" style="table-layout:fixed;">
             <thead>
                 <tr>
-                    <th>Username</th>
-                    <th>Timestamp</th>
+                    <th width="15%">Username</th>
                     <th>Content</th>
-                    <th>Replies</th>
-                    <th>Retweets</th>
-                    <th>Likes</th>
                 </tr>
             </thead>
             <tbody>
                 {% for tweet in tweets %}
                     <tr>
                         <td>{{ tweet.username }}</td>
-                        <td><a href="https://twitter.com/{{ tweet.url }}">{{ tweet.timestamp }}</a></td>
-                        <td>{{ tweet.content }}</td>
-                        <td>{{ tweet.num_reply }}</td>
-                        <td>{{ tweet.num_retweet }}</td>
-                        <td>{{ tweet.num_like }}</td>
+                        <td>
+                            <p style="word-wrap:break-word;margin:0;">{{ tweet.content }}</p>
+                            <div class="tweet_meta">
+                                <a href="https://twitter.com/{{ tweet.url }}">{{ tweet.timestamp }}</a>
+                                <div style="float:right; color:#657786; margin-right:5px">
+                                    <i class="far fa-comment"></i> {{ tweet.num_reply }}
+                                    <i class="fas fa-retweet"></i> {{ tweet.num_retweet }}
+                                    <i class="far fa-heart"></i> {{ tweet.num_like }}
+                                </div>
+                            </div>
+                        </td>
                     </tr>
                 {% endfor %}
             </tbody>
         </table>
 
         <div style="padding:20px 0 20px 0">
-            <a class="waves-effect waves-light btn-small prev disabled" onclick="update_table(false)">Prev</a>
-            <a class="waves-effect waves-light btn-small next" style="float: right" onclick="update_table(true)">Next</a>
+            <a class="waves-effect waves-light btn-small prev disabled" onclick="change_page(false)">Prev</a>
+            {% if total_results <= 50 %}
+                <a class="waves-effect waves-light btn-small next disabled" style="float: right" onclick="change_page(true)">Next</a>
+            {% else %}
+                <a class="waves-effect waves-light btn-small next" style="float: right" onclick="change_page(true)">Next</a>
+            {% endif %}
         </div>
     </div>
+{% elif query is not None %}
+        <div class="container" style="position: relative; bottom: 35px; color: #777">
+            <i>{{ query }} did not match any tweet</i>
+        </div>
 {% endif %}
