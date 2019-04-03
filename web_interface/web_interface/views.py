@@ -10,6 +10,7 @@ def home(request):
     query = None
     tweets = []
     search_after = None
+    corrected = None
     if "text_input" in request.POST and request.POST["text_input"] != "":
         # Get inputs from front-end UI and pre-process the input if necessary
         query = request.POST["text_input"]
@@ -19,6 +20,7 @@ def home(request):
         total_results = response["total_result"]
         tweets = response["results"]
         search_after = response["search_after"]
+        corrected = None if "corrected" not in response else response["corrected"]
 
     arguments = {
         'name': "Home",
@@ -26,7 +28,8 @@ def home(request):
         "total_results": total_results,
         "query": query,
         "tweets": tweets,
-        "search_after": search_after
+        "search_after": search_after,
+        "corrected": corrected
     }
 
     return render(request, "home.html", arguments)

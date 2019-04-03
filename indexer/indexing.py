@@ -82,10 +82,26 @@ def query(name="tweet_index", match_word="MAGA", sort_by="recent", es_host="sear
 
     body = {
         "query": {
-            "match": {
+            "match_phrase": {
                 "Content": match_word
             }
-        }
+        },
+        'suggest':
+            {
+                'text': match_word,
+                'suggestions': {
+                    "phrase": {
+                        "field": "Content",
+                        "size": 1,
+                        "gram_size": 3,
+                        "max_errors": 2,
+                        "direct_generator": [{
+                            "field": "Content",
+                            "suggest_mode": "always"
+                        }],
+                    }
+                }
+            }
     }
     if search_after:
         body["search_after"] = search_after
@@ -96,6 +112,12 @@ def query(name="tweet_index", match_word="MAGA", sort_by="recent", es_host="sear
         body['sort'] = [{"No. likes": {"order": "desc"}, "No. retweets": {"order": "desc"}}, {"_id": "asc"}]
 
     json_result = es.search(index=name, body=body, size=50)
+    suggestions = json_result["suggest"]["suggestions"][0]["options"]
+    if json_result['hits']['total'] == 0 and suggestions:
+        corrected = suggestions[0]
+        response = query(match_word=corrected["text"], sort_by=sort_by)
+        response["corrected"] = corrected["text"]
+        return response
 
     results = []
     search_after = None

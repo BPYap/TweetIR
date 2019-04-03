@@ -24,9 +24,21 @@
     </form>
 
     {% if tweets %}
-        <div style="display:inline-block">
+        <div style="display:inline-block; color: #777">
             <div style="position: relative; bottom: 28px; color: #777;">
                 <i>{{ total_results }} results in {{ time_taken }} seconds</i>
+            </div>
+
+            {% if corrected %}
+                <div style="position: relative; bottom: 26px;">
+                    <i>No result for '{{ query }}'. Showing results for '{{ corrected|safe }}' instead</i>
+                </div>
+            {% endif %}
+        </div>
+    {% elif query is not None %}
+        <div style="display:inline-block">
+            <div style="position: relative; bottom: 28px; color: #777">
+                <i>'{{ query }}' did not match any tweet</i>
             </div>
         </div>
     {% endif %}

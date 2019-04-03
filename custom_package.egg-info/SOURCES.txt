@@ -1,5 +1,8 @@
 README.md
 setup.py
+classifier/__init__.py
+classifier/get_random_tweet.py
+classifier/remove_similar_sentence.py
 crawler/__init__.py
 crawler/tweets_analyzer.py
 crawler/tweets_cleaner.py
