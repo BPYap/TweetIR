@@ -1,7 +1,9 @@
 from django.http import JsonResponse
 from django.shortcuts import render
 
+from crawler.tweets_crawler import crawl as crawl_tweets
 from indexer.indexing import query as elastic_query
+from indexer.indexing import add_index as increment_index
 
 
 def home(request):
@@ -35,6 +37,23 @@ def home(request):
     return render(request, "home.html", arguments)
 
 
+def index(request):
+    arguments = {
+        'name': "Build",
+    }
+
+    return render(request, "index.html", arguments)
+
+
+def corpus(request):
+    return render(request, "corpus.html", {'name': "Documentation"})
+
+
+def sentiment(request):
+    return render(request, "sentiment.html", {'name': "Documentation"})
+
+
+# ajax POST requests
 def get_page(request):
     query = request.POST["query"]
     search_after = None if "search_after[]" not in request.POST else request.POST.getlist("search_after[]")
@@ -59,14 +78,32 @@ def get_page(request):
     return JsonResponse({"tweets": serialized, "search_after": response["search_after"]})
 
 
-def index(request):
-    arguments = None
-    return render(request, "index.html", arguments)
+def crawl(request):
+    keyword = request.POST["keyword"]
+    start_date = request.POST["start_date"]
+    end_date = request.POST["end_date"]
+    max_size = int(request.POST["max_size"])
+
+    tweets = crawl_tweets(keyword, start_date, end_date, max_size)
+
+    serialized = []
+    for tweet in tweets:
+        temp = dict()
+        temp["username"] = tweet.username
+        temp["full_name"] = tweet.fullname
+        temp["timestamp"] = tweet.timestamp
+        temp["url"] = tweet.url
+        temp["content"] = tweet.content
+        temp["num_reply"] = tweet.num_reply
+        temp["num_retweet"] = tweet.num_retweet
+        temp["num_like"] = tweet.num_like
+        serialized.append(temp)
+
+    return JsonResponse({"tweets": serialized})
 
 
-def corpus(request):
-    return render(request, "corpus.html", {'name': "Documentation"})
+def add_index(request):
+    tweets = request.POST["tweets"]
+    increment_index(tweets)
 
-
-def sentiment(request):
-    return render(request, "sentiment.html", {'name': "Documentation"})
+    return JsonResponse({"finish": True})

@@ -1,7 +1,7 @@
-from indexing import query
+from indexing import create_index, query
 
 
-# create_index()
+create_index()
 results = []
 search_after_id = None
 while True:
@@ -10,6 +10,6 @@ while True:
     if len(temp) == 0:
         break
     results.extend(temp)
-    search_after_id = response['search_after_id']
+    search_after_id = response['search_after']
 
 print(len(results))

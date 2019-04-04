@@ -4,8 +4,9 @@ classifier/__init__.py
 classifier/get_random_tweet.py
 classifier/remove_similar_sentence.py
 crawler/__init__.py
-crawler/tweets_analyzer.py
-crawler/tweets_cleaner.py
+crawler/analyze_tweets.py
+crawler/clean_tweets.py
+crawler/crawl_tweets.py
 crawler/tweets_crawler.py
 custom_package.egg-info/PKG-INFO
 custom_package.egg-info/SOURCES.txt

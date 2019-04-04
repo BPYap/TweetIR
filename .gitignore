@@ -2,4 +2,4 @@ env/
 deliverable/
 .idea/
 *.pyc
-.csv
+*.csv

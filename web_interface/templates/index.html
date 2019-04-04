@@ -1,6 +1,264 @@
 {% extends "components/layout.html" %}
 
 {% block content %}
-    {% include "components/input.html" %}
-    {% include "components/output.html" %}
+    <script>
+        var buffer = null;
+
+        function update_crawl_result_table(data) {
+            $("#crawl_progress").hide();
+            $("#crawl_btn").show();
+
+            $("#crawl_result_table_body").empty();
+            $("#crawl_result_table").hide();
+            $("#crawl_result").show();
+            if (data["tweets"].length == 0) {
+                $("#crawl_result_msg").text("Unable to crawl any tweet");
+                return;
+            } else if (data["tweets"].length <= 10) {
+                $("#crawl_result_msg").text("Crawled " + data["tweets"].length  + " tweet(s). Showing all tweet(s):");
+            } else {
+                $("#crawl_result_msg").text("Crawled " + data["tweets"].length  + " tweets. Showing 10 random tweets:");
+            }
+
+            $("#crawl_result_table").show();
+            $("#crawl_result_table").width($("#menu").width());
+
+            buffer = data["tweets"].slice(0, 10);
+
+            $.each(buffer, function (index, value) {
+                var username = value.username;
+                var timestamp = value.timestamp;
+                var url = value.url;
+                var content = value.content;
+                var num_reply = value.num_reply;
+                var num_retweet = value.num_retweet
+                var num_like = value.num_like
+                $("#crawl_result_table_body").append(
+                   "<tr>" +
+                   "<td>" + username + "</td>" +
+
+                   "<td><p style=\"word-break:break-word;margin:0;\">" + content + "</p>" +
+                   "<div class=\"tweet_meta\">" +
+                   "<a href=\"https://twitter.com/" + url + "\">" + timestamp + "</a>" +
+                   "<div style=\"float:right; color:#657786; margin-right:5px\">" +
+                   "<i class=\"far fa-comment\"></i>" + num_reply +
+                   "<i class=\"fas fa-retweet\"></i>" + num_retweet +
+                   "<i class=\"far fa-heart\"></i>" + num_like + "</div></div></td>" +
+                   "</tr>"
+                );
+            })
+
+            $("#crawl_result_table_body").append(
+                "<tr style=\"border-bottom:none; background:transparent\"><td></td>" +
+                "<td><a id=\"index_btn\" class=\"waves-effect waves-light btn-small\" style=\"float: right; margin:20px; width:80px\"" +
+                "onclick=\"add_index()\">Index</a>" +
+                "<div id=\"index_progress\" class=\"preloader-wrapper small active\"" +
+                     "style=\"display:none; float:right; margin:20px;\">" +
+                    "<div class=\"spinner-layer\" style=\"border-color:#0084b4\">" +
+                        "<div class=\"circle-clipper left\">" +
+                            "<div class=\"circle\"></div>" +
+                        "</div>" +
+                        "<div class=\"gap-patch\">" +
+                            "<div class=\"circle\"></div>" +
+                        "</div>" +
+                        "<div class=\"circle-clipper right\">" +
+                            "<div class=\"circle\"></div>" +
+                        "</div>" +
+                    "</div>" +
+                "</div></td></tr>"
+            );
+        }
+
+        function refresh_page() {
+            var toast = $("#toast");
+            $("#msg").text("Successfully added " + buffer.length + " new tweet(s) to index.");
+            $("#index_progress").hide();
+            buffer = null;
+            toast.addClass("show");
+            setTimeout(function () {
+              toast.removeClass("show");
+            }, 3000);
+            setTimeout(function () {
+              window.location.reload(true);
+            }, 4000);
+        }
+
+        var months = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"];
+        function crawl_tweets() {
+            $("#invalid_date_msg").hide();
+            $("#crawl_progress").show();
+            $("#crawl_btn").hide();
+
+            $.ajaxSetup({
+                headers: { "X-CSRFToken": Cookies.get("csrftoken") }
+            });
+
+            var keyword = $("#keyword").val();
+            var start_date = new Date($("#start_date").val());
+            var end_date = new Date($("#end_date").val());
+
+            if (start_date >= end_date) {
+                $("#invalid_date_msg").show();
+                $("#crawl_progress").hide();
+                $("#crawl_btn").show();
+                return;
+            }
+
+            var start = start_date.getFullYear() + "-" + months[start_date.getMonth()] + "-" + start_date.getDate().toString().padStart(2, "0");
+            var end = end_date.getFullYear() + "-" + months[end_date.getMonth()] + "-" + end_date.getDate().toString().padStart(2, "0");
+            var max_size = $("#tweet_slider").val();
+
+            payload = {"keyword": keyword, "start_date": start, "end_date": end, "max_size": max_size};
+
+            $.ajax({
+                method: "POST",
+                url: "/crawl/",
+                data: payload,
+                success: update_crawl_result_table
+            })
+        };
+
+        function add_index() {
+            $("#index_progress").show();
+            $("#index_btn").hide();
+
+            $.ajaxSetup({
+                headers: { "X-CSRFToken": Cookies.get("csrftoken") }
+            });
+
+            payload = {"tweets": JSON.stringify(buffer)};
+
+            $.ajax({
+                method: "POST",
+                url: "/add_index/",
+                data: payload,
+                success: refresh_page
+            })
+        };
+    </script>
+
+    <h5 class="container" style="color: #0084b4; padding:30px">Crawl and index new tweets in real time</h5>
+    <div class="container" style="width:fit-content">
+        <form id="menu" enctype="multipart/form-data" action="" method="post" class="col s12">
+        {% csrf_token %}
+            <h6 style="color: #0084b4; position:relative; right:30px">Crawler configuration</h6>
+            <table>
+                <tbody>
+                    <!--Keyword input-->
+                    <tr>
+                        <td width="30%">
+                            <div style="display:inline-block; margin-right: 15px">
+                                Enter keywords
+                            </div>
+                        </td>
+                        <td>
+                            <div class="input-field" style="width:250px; display:inline-block">
+                                <input id="keyword" value="Donald Trump" type="text">
+                                <label for="keyword">Keyword</label>
+                            </div>
+                        </td>
+                    </tr>
+                    <!--Date range picker-->
+                    <tr>
+                        <td>
+                            <div style="display:inline-block; margin-right: 15px">
+                                Choose date range
+                            </div>
+                        </td>
+                        <td>
+                            <div class="input-field" style="width:250px; display:inline-block">
+                                <input id="start_date" type="text" class="datepicker">
+                                <label for="start_date">Start Date</label>
+                            </div>
+                            <div style="display:inline-block; margin: 0 10px 0 10px">
+                                -
+                            </div>
+                            <div class="input-field" style="width:250px; display:inline-block">
+                                <input id="end_date" type="text" class="datepicker">
+                                <label for="end_date">End Date</label>
+                            </div>
+                            <p id="invalid_date_msg" style="color:red; margin-top:0; display:none">
+                                Start date must be smaller than end date
+                            </p>
+                        </td>
+                    </tr>
+                    <!--Tweets size slider-->
+                    <tr>
+                        <td>
+                            <div style="display:inline-block; margin-right: 15px">
+                                Choose maximum number of tweets to crawl
+                            </div>
+                        </td>
+                        <td>
+                            <p class="range-field" style="width:90%">
+                                <input type="range" id="tweet_slider" min="1" max="300" value="50"/>
+                                <label id="num_tweet" style="float:right">50</label>
+                            </p>
+                        </td>
+                    </tr>
+                    <tr style="border-bottom:none">
+                        <td></td>
+                        <td>
+                            <a id="crawl_btn" class="waves-effect waves-light btn-small"
+                               style="float: right; margin:20px; width:80px" onclick="crawl_tweets()">Crawl</a>
+                            <div id="crawl_progress" class="preloader-wrapper small active"
+                                 style="display:none; float:right; margin:20px;">
+                                <div class="spinner-layer" style="border-color:#0084b4">
+                                    <div class="circle-clipper left">
+                                        <div class="circle"></div>
+                                    </div>
+                                    <div class="gap-patch">
+                                        <div class="circle"></div>
+                                    </div>
+                                    <div class="circle-clipper right">
+                                        <div class="circle"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div id="crawl_result" style="display:none">
+                <h6 style="color: #0084b4; position:relative; right:30px">Crawl results</h6>
+                <p id="crawl_result_msg" style="margin-left:5px"></p>
+                <table id="crawl_result_table" class="striped">
+                    <thead>
+                        <tr>
+                            <th>Username</th>
+                            <th>Content</th>
+                        </tr>
+                    </thead>
+                    <tbody id="crawl_result_table_body">
+                    </tbody>
+                </table>
+            </div>
+        </form>
+    </div>
+
+    <div id="toast">
+        <div id="img"><i class="small material-icons">check</i></div>
+        <div id="msg"></div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var elems = document.querySelectorAll('.datepicker');
+            var begin = new Date(2006, 2, 21);
+            var today = new Date();
+            options = {
+                "defaultDate": today,
+                "setDefaultDate": true,
+                "minDate": begin,
+                "maxDate": today,
+                "yearRange": [begin.getFullYear(), today.getFullYear()]
+            }
+            var instances = M.Datepicker.init(elems, options);
+
+            document.getElementById('tweet_slider').oninput=function(){
+                document.getElementById('num_tweet').innerHTML = this.value;
+            };
+        });
+    </script>
 {% endblock %}

@@ -23,5 +23,8 @@ urlpatterns = [
     path('corpus/', views.corpus),
     path('sentiment/', views.sentiment),
 
-    path('get_page/', views.get_page)
+    # ajax POST requests
+    path('get_page/', views.get_page),
+    path('crawl/', views.crawl),
+    path('add_index/', views.add_index)
 ]

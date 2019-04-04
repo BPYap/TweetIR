@@ -49,7 +49,7 @@ class Tweet:
         self.num_like = json_string['No. likes']
 
 
-def create_index(name="tweet_index", es_host="searchly", filepath="data/data.json"):
+def create_index(name="tweet_index", es_host="searchly", filepath="../data/data.json"):
     if es_host == "searchly":
         es = es_searchly
     elif es_host == "bonsai":
@@ -64,6 +64,33 @@ def create_index(name="tweet_index", es_host="searchly", filepath="data/data.jso
         data = json.load(f)
     for i, record in enumerate(data):
         es.index(index=name, doc_type='tweet', id=i, body=record)
+
+
+def add_index(tweets, name="tweet_index", es_host="searchly"):
+    if es_host == "searchly":
+        es = es_searchly
+    elif es_host == "bonsai":
+        es = es_bonsai
+    else:
+        raise RuntimeError("Unknown elastic host", es_host)
+
+    # fetch the last index
+    _id = es.count(index=name)["count"]
+
+    for record in json.loads(tweets):
+        mapped_record = dict()
+        mapped_record["Username"] = record["username"]
+        mapped_record["Full name"] = record["full_name"]
+        mapped_record["URL"] = record["url"]
+        mapped_record["Timestamp"] = record["timestamp"].replace("T", " ")
+        mapped_record["Content"] = record["content"]
+        mapped_record["No. replies"] = record["num_reply"]
+        mapped_record["No. retweets"] = record["num_retweet"]
+        mapped_record["No. likes"] = record["num_like"]
+        es.index(index=name, doc_type='tweet', id=_id, body=mapped_record)
+        _id += 1
+
+    es.indices.refresh([name])
 
 
 def query(name="tweet_index", match_word="MAGA", sort_by="recent", es_host="searchly", search_after=None):

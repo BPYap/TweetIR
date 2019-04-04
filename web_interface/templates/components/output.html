@@ -11,7 +11,6 @@
     var sort_by_relevant = false;
     search_ids[0] = null;
     search_ids[1] = {{ search_after|safe }};
-    console.log(_query);
 
     function update_table(data) {
         search_ids[curr_page + 1] = data["search_after"];
