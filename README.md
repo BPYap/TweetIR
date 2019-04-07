@@ -5,7 +5,7 @@
 2. Activate the virtual environment using `env\scripts\activate` (Windows) or `source env/bin/activate` (Ubuntu)
 3. Install local dependencies using `python setup.py install`
 4. Install external dependencies using `pip install -r requirements.txt`
-5. Create file `config.json` in root directory. `config.json` contains secrets such as access url to the elasticsearch host server.
+5. Create a file named `config.json` in root directory of this project. `config.json` contains secrets such as access url to the elasticsearch host server
 
 ### Hosting Web Interface Locally
 1. Activate virtual environment
