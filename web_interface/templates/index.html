@@ -23,9 +23,9 @@
             $("#crawl_result_table").show();
             $("#crawl_result_table").width($("#menu").width());
 
-            buffer = data["tweets"].slice(0, 10);
+            buffer = data["tweets"];
 
-            $.each(buffer, function (index, value) {
+            $.each(buffer.slice(0, 10), function (index, value) {
                 var username = value.username;
                 var timestamp = value.timestamp;
                 var url = value.url;
@@ -80,7 +80,7 @@
             }, 3000);
             setTimeout(function () {
               window.location.reload(true);
-            }, 4000);
+            }, 3500);
         }
 
         var months = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"];

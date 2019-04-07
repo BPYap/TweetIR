@@ -4,6 +4,7 @@ certifi==2018.11.29
 chardet==3.0.4
 coala-utils==0.5.1
 colorama==0.4.1
+custom-package==0.0.1
 cycler==0.10.0
 cymem==2.0.2
 cytoolz==0.9.0.1
@@ -22,6 +23,7 @@ msgpack-numpy==0.4.3.2
 murmurhash==1.0.1
 nltk==3.4
 numpy==1.16.1
+pandas==0.24.2
 Pillow==5.4.1
 plac==0.9.6
 preshed==2.0.1
@@ -30,8 +32,11 @@ python-dateutil==2.8.0
 pytz==2018.9
 regex==2018.1.10
 requests==2.21.0
+scikit-learn==0.20.3
+scipy==1.2.1
 singledispatch==3.4.0.3
 six==1.12.0
+sklearn==0.0
 soupsieve==1.7.3
 spacy==2.0.18
 termcolor==1.1.0
@@ -45,3 +50,4 @@ ujson==1.35
 urllib3==1.24.1
 wcwidth==0.1.7
 wrapt==1.10.11
+xgboost==0.82

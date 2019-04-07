@@ -3,6 +3,8 @@
     var total_pages = Math.ceil({{ total_results }} / 50);
     var search_ids = new Array(total_pages);
     var _query = query;
+    var sort_by_recent = true;
+    var filter_by = null;
     {% if corrected %}
         _query = "{{ corrected }}";
     {% endif %}
@@ -24,17 +26,25 @@
             var num_reply = value.num_reply;
             var num_retweet = value.num_retweet
             var num_like = value.num_like
+            var sentiment = value.sentiment
+
+            var tr_tag = "<tr class=\"neutral_tweet\">";
+            if (sentiment == 1) {
+                tr_tag = "<tr class=\"positive_tweet\">";
+            } else if (sentiment == -1) {
+                tr_tag = "<tr class=\"negative_tweet\">";
+            }
             $("tbody").append(
-               "<tr>" +
+               tr_tag +
                "<td>" + username + "</td>" +
 
                "<td><p style=\"word-wrap:break-word;margin:0;\">" + content + "</p>" +
                "<div class=\"tweet_meta\">" +
                "<a href=\"https://twitter.com/" + url + "\">" + timestamp + "</a>" +
                "<div style=\"float:right; color:#657786; margin-right:5px\">" +
-               "<i class=\"far fa-comment\"></i>" + num_reply +
-               "<i class=\"fas fa-retweet\"></i>" + num_retweet +
-               "<i class=\"far fa-heart\"></i>" + num_like + "</div></div></td>" +
+               "<i class=\"far fa-comment\"></i>" + " " + num_reply + " " +
+               "<i class=\"fas fa-retweet\"></i>" + " " + num_retweet + " " +
+               "<i class=\"far fa-heart\"></i>" + " " + num_like + " " + "</div></div></td>" +
 
                "</tr>"
             )
@@ -69,6 +79,10 @@
             payload["relevant"] = true;
         }
 
+        if (filter_by != null) {
+            payload["filter_by"] = filter_by;
+        }
+
         $.ajax({
             method: "POST",
             url: "/get_page/",
@@ -92,6 +106,13 @@
         payload = {"query": _query};
         if (is_relevant == true) {
             payload["relevant"] = true;
+            sort_by_recent = false;
+        } else {
+            sort_by_recent = true;
+        }
+
+        if (filter_by != null) {
+            payload["filter_by"] = filter_by;
         }
 
         $.ajax({
@@ -99,6 +120,56 @@
             url: "/get_page/",
             data: payload,
             success: update_table
+        })
+    };
+
+    function reset_pages(data) {
+        total_pages = Math.ceil(data["total_results"] / 50);
+        console.log(total_pages);
+        search_ids = new Array(total_pages);
+        search_ids[0] = null;
+        if (total_pages == 1) {
+            $(".next").addClass("disabled");
+        } else {
+            $(".next").removeClass("disabled");
+        }
+        update_table(data);
+    }
+
+    function get_filtered(value) {
+        curr_page = 0;
+        $(".prev").addClass("disabled");
+        if (total_pages > 1) {
+            $(".next").removeClass("disabled");
+        }
+
+        $.ajaxSetup({
+            headers: { "X-CSRFToken": Cookies.get("csrftoken") }
+        });
+
+        payload = {"query": _query};
+        if (value == "positive") {
+            filter_by = 1;
+        } else if (value == "neutral") {
+            filter_by = 0;
+        } else if (value == "negative") {
+            filter_by = -1;
+        } else{
+            filter_by = null;
+        }
+
+        if (!sort_by_recent) {
+            payload["relevant"] = true;
+        }
+        if (filter_by != null) {
+            payload["filter_by"] = filter_by;
+        }
+
+        $.ajax({
+            method: "POST",
+            url: "/get_page/",
+            data: payload,
+            success: reset_pages
         })
     };
 </script>
@@ -109,7 +180,7 @@
         <div id="container">
             <div class="inner-container">
                 <div class="toggle">
-                    <p>Most Relevant</p>
+                    <p>Most Popular</p>
                 </div>
                 <div class="toggle">
                     <p>Most Recent</p>
@@ -117,35 +188,54 @@
             </div>
             <div class="inner-container" id='toggle-container'>
                 <div class="toggle">
-                    <p>Most Relevant</p>
+                    <p>Most Popular</p>
                 </div>
                 <div class="toggle">
                     <p>Most Recent</p>
                 </div>
             </div>
         </div>
-        <script>
-            var toggle = document.getElementById('container');
-            var toggleContainer = document.getElementById('toggle-container');
-            var toggleNumber;
+        <div class="input-field" style="width:110px; height:30px; position:relative; bottom:3px; margin:5px 15px 0 0; float:right">
+            <select id="filter_by" class="browser-default" style="height:fit-content; border-color:#e0e0c5">
+                <option value="all" selected>All</option>
+                <option value="positive">Positive</option>
+                <option value="neutral">Neutral</option>
+                <option value="negative">Negative</option>
+            </select>
+        </div>
 
-            toggle.addEventListener('click', function() {
-                toggleNumber = !toggleNumber;
-                if (toggleNumber) {
-                    toggleContainer.style.clipPath = 'inset(0 0 0 50%)';
-                    change_sort(true);
-                } else {
-                    toggleContainer.style.clipPath = 'inset(0 50% 0 0)';
-                    change_sort(false);
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                var toggle = document.getElementById('container');
+                var toggleContainer = document.getElementById('toggle-container');
+                var toggleNumber;
+
+                toggle.addEventListener('click', function() {
+                    toggleNumber = !toggleNumber;
+                    if (toggleNumber) {
+                        toggleContainer.style.clipPath = 'inset(0 0 0 50%)';
+                        change_sort(true);
+                    } else {
+                        toggleContainer.style.clipPath = 'inset(0 50% 0 0)';
+                        change_sort(false);
+                    }
+                    toggleContainer.style.backgroundColor = '#0084b4';
+                });
+
+                var elems = document.querySelectorAll('select');
+                var instances = M.FormSelect.init(elems, null);
+
+                var select = document.getElementById('filter_by');
+                select.onchange=function(){
+                    get_filtered(select.value);
                 }
-                toggleContainer.style.backgroundColor = '#0084b4';
             });
         </script>
 
     </div>
 
     <div class="container">
-        <table class="striped" style="table-layout:fixed;">
+        <table class="highlight" style="table-layout:fixed;">
             <thead>
                 <tr>
                     <th width="15%">Username</th>
@@ -154,7 +244,13 @@
             </thead>
             <tbody>
                 {% for tweet in tweets %}
-                    <tr>
+                    {% if tweet.sentiment == 1 %}
+                        <tr class="positive_tweet">
+                    {% elif tweet.sentiment == -1 %}
+                        <tr class="negative_tweet">
+                    {% else %}
+                        <tr class="neutral_tweet">
+                    {% endif %}
                         <td>{{ tweet.username }}</td>
                         <td>
                             <p style="word-wrap:break-word;margin:0;">{{ tweet.content }}</p>

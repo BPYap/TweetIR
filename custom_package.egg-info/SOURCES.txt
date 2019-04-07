@@ -1,8 +1,10 @@
 README.md
 setup.py
 classifier/__init__.py
+classifier/assign_sentiment_label.py
 classifier/get_random_tweet.py
 classifier/remove_similar_sentence.py
+classifier/sentiment_classifier.py
 crawler/__init__.py
 crawler/analyze_tweets.py
 crawler/clean_tweets.py
