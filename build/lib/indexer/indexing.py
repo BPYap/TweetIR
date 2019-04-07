@@ -30,7 +30,8 @@ mapping = '''{
         "Content":      {"type":"text"},
         "No. replies":  {"type":"integer"},
         "No. retweets": {"type":"integer"}, 
-        "No. likes":    {"type":"integer"} 
+        "No. likes":    {"type":"integer"},
+        "Sentiment":    {"type":"integer"}
       }
     }
   }
@@ -47,6 +48,7 @@ class Tweet:
         self.num_reply = json_string['No. replies']
         self.num_retweet = json_string['No. retweets']
         self.num_like = json_string['No. likes']
+        self.sentiment = json_string['Sentiment']
 
 
 def create_index(name="tweet_index", es_host="searchly", filepath="../data/data.json"):
@@ -87,13 +89,15 @@ def add_index(tweets, name="tweet_index", es_host="searchly"):
         mapped_record["No. replies"] = record["num_reply"]
         mapped_record["No. retweets"] = record["num_retweet"]
         mapped_record["No. likes"] = record["num_like"]
+        mapped_record["Sentiment"] = record["sentiment"]
         es.index(index=name, doc_type='tweet', id=_id, body=mapped_record)
         _id += 1
 
     es.indices.refresh([name])
 
 
-def query(name="tweet_index", match_word="MAGA", sort_by="recent", es_host="searchly", search_after=None):
+def query(name="tweet_index", match_word="MAGA", sort_by="recent", filter_by=None,
+          es_host="searchly", search_after=None):
     """
     name: name of the index
     match_word: keyword to be matched
@@ -109,9 +113,11 @@ def query(name="tweet_index", match_word="MAGA", sort_by="recent", es_host="sear
 
     body = {
         "query": {
-            "match_phrase": {
-                "Content": match_word
-            }
+                "bool": {
+                    "must": [
+                        {"match_phrase": {"Content": match_word}}
+                    ]
+                }
         },
         'suggest':
             {
@@ -137,6 +143,9 @@ def query(name="tweet_index", match_word="MAGA", sort_by="recent", es_host="sear
         body["sort"] = [{"Timestamp": {"order": "desc"}}, {"_id": "asc"}]
     else:
         body['sort'] = [{"No. likes": {"order": "desc"}, "No. retweets": {"order": "desc"}}, {"_id": "asc"}]
+
+    if filter_by is not None:
+        body["query"]["bool"]["filter"] = [{"term": {"Sentiment": filter_by}}]
 
     json_result = es.search(index=name, body=body, size=50)
     suggestions = json_result["suggest"]["suggestions"][0]["options"]
