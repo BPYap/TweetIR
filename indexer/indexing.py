@@ -2,6 +2,7 @@ import json
 import re
 
 from elasticsearch import Elasticsearch
+from tqdm import tqdm
 
 
 with open("../config.json", 'r') as f:
@@ -62,9 +63,13 @@ def create_index(name="tweet_index", es_host="searchly", filepath="../data/data.
     if es.indices.exists(name):
         es.indices.delete(name)
     es.indices.create(index=name, body=mapping)
+
     with open(filepath) as f:
         data = json.load(f)
-    for i, record in enumerate(data):
+    total = 0
+    for _ in data:
+        total += 1
+    for i, record in tqdm(enumerate(data), total=total):
         es.index(index=name, doc_type='tweet', id=i, body=record)
 
 
