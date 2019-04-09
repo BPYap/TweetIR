@@ -244,9 +244,9 @@
             </thead>
             <tbody>
                 {% for tweet in tweets %}
-                    {% if tweet.sentiment == 1 %}
+                    {% if tweet.sentiment == "1" %}
                         <tr class="positive_tweet">
-                    {% elif tweet.sentiment == -1 %}
+                    {% elif tweet.sentiment == "-1" %}
                         <tr class="negative_tweet">
                     {% else %}
                         <tr class="neutral_tweet">
