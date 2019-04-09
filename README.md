@@ -14,7 +14,7 @@
 
 ### Hosting Web Interface Locally
 1. Activate virtual environment
-2. Change directory into `web_interface`
+2. Change directory into `web_interface` using `cd web_interface`
 3. Start local host server (http://127.0.0.1:8000) using `python manage.py runserver`
 
 ### Questions Checklist
