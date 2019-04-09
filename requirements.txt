@@ -42,8 +42,6 @@ spacy==2.0.18
 termcolor==1.1.0
 thinc==6.12.1
 toolz==0.9.0
-torch==1.0.1
-torchvision==0.2.2.post3
 tqdm==4.31.0
 twitterscraper==0.9.3
 ujson==1.35
