@@ -2,22 +2,26 @@ import json
 import re
 
 from elasticsearch import Elasticsearch
+from tqdm import tqdm
 
 
 with open("../config.json", 'r') as f:
     urls = json.load(f)
     es_searchly = Elasticsearch([urls["searchly"]])
 
-    bonsai_url = urls["bonsai"]
-    auth = re.search('https://(.*)@', bonsai_url).group(1).split(':')
-    host = bonsai_url.replace('https://%s:%s@' % (auth[0], auth[1]), '')
-    es_header = [{
-        'host': host,
-        'port': 443,
-        'use_ssl': True,
-        'http_auth': (auth[0], auth[1])
-    }]
-    es_bonsai = Elasticsearch(es_header)
+    try:
+        bonsai_url = urls["bonsai"]
+        auth = re.search('https://(.*)@', bonsai_url).group(1).split(':')
+        host = bonsai_url.replace('https://%s:%s@' % (auth[0], auth[1]), '')
+        es_header = [{
+            'host': host,
+            'port': 443,
+            'use_ssl': True,
+            'http_auth': (auth[0], auth[1])
+        }]
+        es_bonsai = Elasticsearch(es_header)
+    except AttributeError:
+        es_bonsai = None
 
 mapping = '''{
   "mappings": {
@@ -62,9 +66,13 @@ def create_index(name="tweet_index", es_host="searchly", filepath="../data/data.
     if es.indices.exists(name):
         es.indices.delete(name)
     es.indices.create(index=name, body=mapping)
+
     with open(filepath) as f:
         data = json.load(f)
-    for i, record in enumerate(data):
+    total = 0
+    for _ in data:
+        total += 1
+    for i, record in tqdm(enumerate(data), total=total):
         es.index(index=name, doc_type='tweet', id=i, body=record)
 
 
@@ -149,7 +157,7 @@ def query(name="tweet_index", match_word="MAGA", sort_by="recent", filter_by=Non
 
     json_result = es.search(index=name, body=body, size=50)
     suggestions = json_result["suggest"]["suggestions"][0]["options"]
-    if json_result['hits']['total'] == 0 and suggestions:
+    if json_result['hits']['total'] == 0 and suggestions and filter_by is None:
         corrected = suggestions[0]
         response = query(match_word=corrected["text"], sort_by=sort_by)
         response["corrected"] = corrected["text"]

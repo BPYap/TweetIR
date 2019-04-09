@@ -1,10 +1,9 @@
 import csv
 
-from indexing import create_index, query
+from indexing import query
 
 QUERY = "trump"
 
-create_index()
 search_after_id = None
 file = None
 writer = None
@@ -13,7 +12,7 @@ while True:
     if file is None:
         total_results = response["total_result"]
         time_taken = response["time_taken"]
-        file = open("query={},total_result={},time_taken={}s.csv".format(QUERY, total_results, time_taken),
+        file = open("../data/query={},total_result={},time_taken={}s.csv".format(QUERY, total_results, time_taken),
                     'a', encoding='utf-8', newline="")
         writer = csv.writer(file)
         writer.writerow(["Fullname", "URL", "Timestamp", "Content", "Replies", "Retweets", "Likes", "Sentiment"])

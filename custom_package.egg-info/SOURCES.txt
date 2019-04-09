@@ -16,5 +16,6 @@ custom_package.egg-info/dependency_links.txt
 custom_package.egg-info/top_level.txt
 indexer/__init__.py
 indexer/convert_csv_to_json.py
+indexer/create_index.py
 indexer/indexing.py
 indexer/main.py
