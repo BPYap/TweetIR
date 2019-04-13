@@ -1,4 +1,4 @@
-# CZ4034-Information Retrieval Assignment
+# TweetIR
 
 ### Environment Setup
 1. Create a virtual environment using `python3 -m virtualenv env`
